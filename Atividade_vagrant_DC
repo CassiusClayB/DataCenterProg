@@ -1,0 +1,26 @@
+$script_apache2 = <<-SCRIPT
+apt-get update
+apt-get -y install apache2
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "Ubuntu/bionic64"
+
+  config.vm.define "apache" do |apache|
+
+    apache.vm.network "public_network"
+    apache.vm.synced_folder ".", "/vagrant", disabled: true
+    apache.vm.synced_folder "./apache", "/vagrant/web"
+    apache.vm.provision "shell", inline:$script_apache2
+
+  end
+
+  config.vm.define "mysql" do |mysql|
+
+    mysql.vm.hostname "mysql"
+    mysql.vm.network "public_network"
+    mysql.vm.synced_folder ".", "/vagrant", disabled: true
+    mysql.vm.synced_folder "./mysql", "/vagrant/mysql"
+  end
+
+end
